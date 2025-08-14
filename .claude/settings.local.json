@@ -7,6 +7,7 @@
       "mcp__playwright__browser_navigate",
       "Bash(./run.sh)"
     ],
-    "deny": []
+    "deny": [],
+    "defaultMode": "acceptEdits"
   }
 }

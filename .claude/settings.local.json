@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(export PATH=\"$HOME/.local/bin:$PATH\")",
+      "Bash(uv sync:*)",
+      "mcp__playwright__browser_navigate",
+      "Bash(./run.sh)"
+    ],
+    "deny": []
+  }
+}

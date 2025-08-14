@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 import os
 
 from config import config
@@ -43,13 +43,22 @@ class QueryRequest(BaseModel):
 class QueryResponse(BaseModel):
     """Response model for course queries"""
     answer: str
-    sources: List[str]
+    sources: List[Dict[str, Optional[str]]]
     session_id: str
 
 class CourseStats(BaseModel):
     """Response model for course statistics"""
     total_courses: int
     course_titles: List[str]
+
+class ClearSessionRequest(BaseModel):
+    """Request model for clearing session"""
+    session_id: str
+
+class ClearSessionResponse(BaseModel):
+    """Response model for session clearing"""
+    success: bool
+    message: str
 
 # API Endpoints
 
@@ -73,6 +82,20 @@ async def query_documents(request: QueryRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/debug")
+async def debug_endpoint():
+    """Debug endpoint to check server state"""
+    import os
+    try:
+        return {
+            "cwd": os.getcwd(),
+            "api_key_env": bool(os.getenv('ANTHROPIC_API_KEY')),
+            "api_key_config": bool(config.ANTHROPIC_API_KEY),
+            "api_key_first_chars": config.ANTHROPIC_API_KEY[:10] if config.ANTHROPIC_API_KEY else "None"
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
 @app.get("/api/courses", response_model=CourseStats)
 async def get_course_stats():
     """Get course analytics and statistics"""
@@ -81,6 +104,18 @@ async def get_course_stats():
         return CourseStats(
             total_courses=analytics["total_courses"],
             course_titles=analytics["course_titles"]
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/session/clear", response_model=ClearSessionResponse)
+async def clear_session(request: ClearSessionRequest):
+    """Clear conversation history for a session"""
+    try:
+        rag_system.session_manager.clear_session(request.session_id)
+        return ClearSessionResponse(
+            success=True,
+            message=f"Session {request.session_id} cleared successfully"
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

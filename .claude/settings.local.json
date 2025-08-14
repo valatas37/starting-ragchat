@@ -6,7 +6,9 @@
       "Bash(uv sync:*)",
       "mcp__playwright__browser_navigate",
       "Bash(./run.sh)",
-      "Bash(uv run pytest:*)"
+      "Bash(uv run pytest:*)",
+      "Bash(uv run isort:*)",
+      "Bash(chmod:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

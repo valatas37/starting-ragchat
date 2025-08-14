@@ -5,8 +5,10 @@
       "Bash(export PATH=\"$HOME/.local/bin:$PATH\")",
       "Bash(uv sync:*)",
       "mcp__playwright__browser_navigate",
-      "Bash(./run.sh)"
+      "Bash(./run.sh)",
+      "Bash(uv run pytest:*)"
     ],
-    "deny": []
+    "deny": [],
+    "defaultMode": "acceptEdits"
   }
 }
